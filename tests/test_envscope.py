@@ -14,6 +14,6 @@ def test_set_overwrites_value() -> None:
     assert scope.Get("univesity") == "SPbU"
 
 
-def test_get_missing_key_raises() -> None:
+def test_get_missing_key_returns_empty_string() -> None:
     scope = envScope()
-    assert scope.Get("university") is None
+    assert scope.Get("university") == ""

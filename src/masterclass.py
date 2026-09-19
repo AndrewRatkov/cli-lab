@@ -4,6 +4,9 @@ from enum import Enum
 
 from src.envscope import envScope
 from src.fdtriple import fdTriple
+import commands
+from src.command import Command
+from src.substitutor import splitIntoArguments
 
 
 class NodeType(Enum):
@@ -80,7 +83,16 @@ class MasterClass:
         return self._fdTriple
 
     def process(self) -> None:
-        pass
+        assert self.isValid()
+        if self._nodeType == NodeType.INNER:
+            self._leftNode.process()
+            self._rightNode.process()
+        else:
+            args: list[str] = splitIntoArguments(self._rawCmd, self._envScope)
+            assert len(args) > 0
+            cmd: Command | None = commands.lookup(args[0])
+            if cmd:
+                cmd(self._fdTriple, self._envScope, args)
 
     def isValid(self) -> bool:
         if self._nodeType == NodeType.NOT_INITIALIZED:
@@ -92,7 +104,7 @@ class MasterClass:
                 or not self._rightNode
             ):
                 return False
-        elif self._leftNode == NodeType.LEAF:
+        elif self._nodeType == NodeType.LEAF:
             if self._rawCmd is None:
                 return False
 
