@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from enum import Enum
 
-from envscope import envScope
-from fdtriple import fdTriple
+from src.envscope import envScope
+from src.fdtriple import fdTriple
 
 
 class NodeType(Enum):
