@@ -2,8 +2,8 @@ import io
 from pathlib import Path
 
 import commands
-from envscope import envScope
-from fdtriple import fdTriple
+from src.envscope import envScope
+from src.fdtriple import fdTriple
 
 
 def _text_fd(content: str = "") -> io.TextIOWrapper:
