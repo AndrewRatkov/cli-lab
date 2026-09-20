@@ -1,4 +1,4 @@
-from src.envscope import envScope
+from envscope import envScope
 
 from enum import Enum
 
