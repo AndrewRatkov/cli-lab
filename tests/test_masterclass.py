@@ -1,4 +1,4 @@
-from src.masterclass import *
+from masterclass import *
 import io
 
 

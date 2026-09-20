@@ -1,5 +1,5 @@
-from src.substitutor import splitIntoArguments
-from src.envscope import envScope
+from substitutor import splitIntoArguments
+from envscope import envScope
 
 import pytest
 

@@ -1,8 +1,8 @@
 import io
 from pathlib import Path
 
-from src.main import run
-from src.fdtriple import fdTriple
+from main import run
+from fdtriple import fdTriple
 
 
 def make_fd() -> io.TextIOWrapper:
