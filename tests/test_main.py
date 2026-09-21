@@ -2,7 +2,7 @@ import io
 from pathlib import Path
 
 from main import run
-from fdtriple import fdTriple
+from fdtriple import FdTriple
 
 
 def make_fd() -> io.TextIOWrapper:
@@ -11,9 +11,9 @@ def make_fd() -> io.TextIOWrapper:
 
 def test1() -> None:
     string: str = "echo hello"
-    fds = fdTriple()
+    fds = FdTriple()
     res_fd = make_fd()
-    fds.SetOut(res_fd)
+    fds.set_out(res_fd)
 
     run(string, fds)
     res_fd.seek(0)
@@ -25,9 +25,9 @@ def test2(tmp_path: Path) -> None:
     f.write_text("Hello, world!\n")
 
     string: str = "cat " + str(f)
-    fds = fdTriple()
+    fds = FdTriple()
     res_fd = make_fd()
-    fds.SetOut(res_fd)
+    fds.set_out(res_fd)
 
     run(string, fds)
     res_fd.seek(0)
@@ -36,9 +36,9 @@ def test2(tmp_path: Path) -> None:
 
 def test3() -> None:
     string: str = "echo hello | cat"
-    fds = fdTriple()
+    fds = FdTriple()
     res_fd = make_fd()
-    fds.SetOut(res_fd)
+    fds.set_out(res_fd)
 
     run(string, fds)
     res_fd.seek(0)
@@ -47,9 +47,9 @@ def test3() -> None:
 
 def test4() -> None:
     string: str = "echo hello; echo world"
-    fds = fdTriple()
+    fds = FdTriple()
     res_fd = make_fd()
-    fds.SetOut(res_fd)
+    fds.set_out(res_fd)
 
     run(string, fds)
     res_fd.seek(0)

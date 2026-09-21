@@ -22,6 +22,8 @@ To install `black` use
 pip install black==24.2.0
 ```
 
+Class naming: CamelCase, functions naming: snake_case.
+
 ## Run
 ```
 :~/apps/cli-lab$ python src/main.py

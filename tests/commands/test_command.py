@@ -1,20 +1,20 @@
 import io
 import commands
 from command import Command
-from envscope import envScope
-from fdtriple import fdTriple
+from envscope import EnvScope
+from fdtriple import FdTriple
 
 
 def _text_fd() -> io.TextIOWrapper:
     return io.TextIOWrapper(io.BytesIO(), encoding="utf-8")
 
 
-def defaultFdTriple() -> fdTriple:
-    return fdTriple(_text_fd(), _text_fd(), _text_fd())
+def default_fd_triple() -> FdTriple:
+    return FdTriple(_text_fd(), _text_fd(), _text_fd())
 
 
-def readOut(fds: fdTriple) -> str:
-    out = fds.GetOut()
+def read_out(fds: FdTriple) -> str:
+    out = fds.get_out()
     out.seek(0)
     return out.read()
 
@@ -35,13 +35,13 @@ def test_registry_names_are_unique() -> None:
 
 
 def test_call_delegates_to_run() -> None:
-    fds = defaultFdTriple()
+    fds = default_fd_triple()
     seen_args: list[list[str]] = []
 
-    def fake(fds: fdTriple, env: envScope, args: list[str]) -> int:
+    def fake(fds: FdTriple, env: EnvScope, args: list[str]) -> int:
         seen_args.append(args)
         return 42
 
     cmd = Command("fake", fake)
-    assert cmd(fds, envScope(), ["fake", "a", "b"]) == 42
+    assert cmd(fds, EnvScope(), ["fake", "a", "b"]) == 42
     assert seen_args == [["fake", "a", "b"]]

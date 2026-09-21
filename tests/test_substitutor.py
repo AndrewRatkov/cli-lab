@@ -1,5 +1,5 @@
-from substitutor import splitIntoArguments
-from envscope import envScope
+from substitutor import split_into_arguments
+from envscope import EnvScope
 
 import pytest
 
@@ -7,18 +7,18 @@ import pytest
 @pytest.mark.parametrize(
     "cmd,scope,expected",
     [
-        ("echo x", envScope(), ["echo", "x"]),
-        ("cat file.txt", envScope(), ["cat", "file.txt"]),
-        ("echo 'hello world'", envScope(), ["echo", "hello world"]),
-        (" cat    file.txt  ", envScope(), ["cat", "file.txt"]),
-        ("echo ' hello world '", envScope(), ["echo", " hello world "]),
-        ("echo '$x$x$y'", envScope(), ["echo", "$x$x$y"]),
-        ("echo $x$x$y", envScope(), ["echo"]),
-        ('echo "$x$x$y"', envScope(), ["echo"]),
-        ("echo \"''\"", envScope(), ["echo", "''"]),
-        ("echo $x", envScope({"x": "30"}), ["echo", "30"]),
-        ("$x$y", envScope({"x": "ec", "y": "ho hello"}), ["echo", "hello"]),
+        ("echo x", EnvScope(), ["echo", "x"]),
+        ("cat file.txt", EnvScope(), ["cat", "file.txt"]),
+        ("echo 'hello world'", EnvScope(), ["echo", "hello world"]),
+        (" cat    file.txt  ", EnvScope(), ["cat", "file.txt"]),
+        ("echo ' hello world '", EnvScope(), ["echo", " hello world "]),
+        ("echo '$x$x$y'", EnvScope(), ["echo", "$x$x$y"]),
+        ("echo $x$x$y", EnvScope(), ["echo"]),
+        ('echo "$x$x$y"', EnvScope(), ["echo"]),
+        ("echo \"''\"", EnvScope(), ["echo", "''"]),
+        ("echo $x", EnvScope({"x": "30"}), ["echo", "30"]),
+        ("$x$y", EnvScope({"x": "ec", "y": "ho hello"}), ["echo", "hello"]),
     ],
 )
 def test_split(cmd, scope, expected) -> None:
-    assert splitIntoArguments(cmd, scope) == expected
+    assert split_into_arguments(cmd, scope) == expected

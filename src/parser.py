@@ -49,18 +49,18 @@ class Parser:
     @staticmethod
     def _inner(split_type, raw, left, right) -> MasterClass:
         node = MasterClass()
-        node.SetNodeType(NodeType.INNER)
-        node.SetSplitType(split_type)
-        node.SetRawCmd(raw)
-        node.SetLeftNode(left)
-        node.SetRightNode(right)
+        node.set_node_type(NodeType.INNER)
+        node.set_split_type(split_type)
+        node.set_raw_cmd(raw)
+        node.set_left_node(left)
+        node.set_right_node(right)
         return node
 
     @staticmethod
     def _leaf(raw) -> MasterClass:
         node = MasterClass()
-        node.SetNodeType(NodeType.LEAF)
-        node.SetRawCmd(raw)
+        node.set_node_type(NodeType.LEAF)
+        node.set_raw_cmd(raw)
         return node
 
     def _top_positions(self, s, sep):
@@ -100,9 +100,9 @@ class Parser:
 
     def dump(self, node, indent=0):
         pad = "  " * indent
-        if node.GetNodeType() == NodeType.LEAF:
-            print(f"{pad}{node.GetRawCmd()!r}")
+        if node.get_node_type() == NodeType.LEAF:
+            print(f"{pad}{node.get_raw_cmd()!r}")
         else:
-            print(f"{pad}[{node.GetSplitType().value}] {node.GetRawCmd()!r}")
-            self.dump(node.GetLeftNode(), indent + 1)
-            self.dump(node.GetRightNode(), indent + 1)
+            print(f"{pad}[{node.get_split_type().value}] {node.get_raw_cmd()!r}")
+            self.dump(node.get_left_node(), indent + 1)
+            self.dump(node.get_right_node(), indent + 1)

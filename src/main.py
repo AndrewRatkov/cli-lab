@@ -1,16 +1,16 @@
 from parser import Parser
 from masterclass import MasterClass
-from fdtriple import fdTriple
-from envscope import envScope
+from fdtriple import FdTriple
+from envscope import EnvScope
 
 
-def run(string: str, fds: fdTriple = fdTriple(), envs: envScope = envScope()) -> None:
+def run(string: str, fds: FdTriple = FdTriple(), envs: EnvScope = EnvScope()) -> None:
     parser: Parser = Parser(string)
     masterclass_root: MasterClass = parser.parse()
 
-    fds.replaceNones()
-    masterclass_root.SetFdTriple(fds)
-    masterclass_root.SetEnvScope(envs)
+    fds.replace_nones()
+    masterclass_root.set_fd_triple(fds)
+    masterclass_root.set_env_scope(envs)
 
     masterclass_root.preprocess()
     masterclass_root.process()

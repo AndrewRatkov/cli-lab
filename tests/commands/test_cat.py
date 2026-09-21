@@ -2,8 +2,8 @@ import io
 from pathlib import Path
 
 import commands
-from envscope import envScope
-from fdtriple import fdTriple
+from envscope import EnvScope
+from fdtriple import FdTriple
 
 
 def _text_fd(content: str = "") -> io.TextIOWrapper:
@@ -13,33 +13,33 @@ def _text_fd(content: str = "") -> io.TextIOWrapper:
     return fd
 
 
-def defaultFdTriple(in_str: str = "") -> fdTriple:
-    return fdTriple(_text_fd(in_str), _text_fd(), _text_fd())
+def default_fd_triple(in_str: str = "") -> FdTriple:
+    return FdTriple(_text_fd(in_str), _text_fd(), _text_fd())
 
 
-def readOut(fds: fdTriple) -> str:
-    out = fds.GetOut()
+def read_out(fds: FdTriple) -> str:
+    out = fds.get_out()
     out.seek(0)
     return out.read()
 
 
-def readErr(fds: fdTriple) -> str:
-    err = fds.GetErr()
+def read_err(fds: FdTriple) -> str:
+    err = fds.get_err()
     err.seek(0)
     return err.read()
 
 
-def run_cat(fds: fdTriple, *args: str) -> int:
-    return commands.lookup("cat")(fds, envScope(), ["cat", *args])
+def run_cat(fds: FdTriple, *args: str) -> int:
+    return commands.lookup("cat")(fds, EnvScope(), ["cat", *args])
 
 
 def test_cat_single_file(tmp_path: Path) -> None:
     f = tmp_path / "a.txt"
     f.write_text("Hello, world!\n")
-    fds = defaultFdTriple()
+    fds = default_fd_triple()
     assert run_cat(fds, str(f)) == 0
-    assert readOut(fds) == "Hello, world!\n"
-    assert readErr(fds) == ""
+    assert read_out(fds) == "Hello, world!\n"
+    assert read_err(fds) == ""
 
 
 def test_cat_concatenates_files_in_order(tmp_path: Path) -> None:
@@ -47,45 +47,45 @@ def test_cat_concatenates_files_in_order(tmp_path: Path) -> None:
     b = tmp_path / "b.txt"
     a.write_text("first")
     b.write_text("second")
-    fds = defaultFdTriple()
+    fds = default_fd_triple()
     assert run_cat(fds, str(a), str(b)) == 0
-    assert readOut(fds) == "firstsecond"
+    assert read_out(fds) == "firstsecond"
 
 
 def test_cat_without_args_reads_stdin() -> None:
-    fds = defaultFdTriple("from stdin\n")
+    fds = default_fd_triple("from stdin\n")
     assert run_cat(fds) == 0
-    assert readOut(fds) == "from stdin\n"
+    assert read_out(fds) == "from stdin\n"
 
 
 def test_cat_dash_means_stdin(tmp_path: Path) -> None:
     f = tmp_path / "a.txt"
     f.write_text("file\n")
-    fds = defaultFdTriple("stdin\n")
+    fds = default_fd_triple("stdin\n")
     assert run_cat(fds, str(f), "-") == 0
-    assert readOut(fds) == "file\nstdin\n"
+    assert read_out(fds) == "file\nstdin\n"
 
 
 def test_cat_empty_file(tmp_path: Path) -> None:
     f = tmp_path / "empty.txt"
     f.write_text("")
-    fds = defaultFdTriple()
+    fds = default_fd_triple()
     assert run_cat(fds, str(f)) == 0
-    assert readOut(fds) == ""
+    assert read_out(fds) == ""
 
 
 def test_cat_missing_file_reports_error(tmp_path: Path) -> None:
     fd_missing = tmp_path / "nope.txt"
-    fds = defaultFdTriple()
+    fds = default_fd_triple()
     assert run_cat(fds, str(fd_missing)) == 1
-    assert readOut(fds) == ""
-    assert readErr(fds) == f"cat: {fd_missing}: No such file or directory\n"
+    assert read_out(fds) == ""
+    assert read_err(fds) == f"cat: {fd_missing}: No such file or directory\n"
 
 
 def test_cat_directory_reports_error(tmp_path: Path) -> None:
-    fds = defaultFdTriple()
+    fds = default_fd_triple()
     assert run_cat(fds, str(tmp_path)) == 1
-    assert readErr(fds) == f"cat: {tmp_path}: Is a directory\n"
+    assert read_err(fds) == f"cat: {tmp_path}: Is a directory\n"
 
 
 def test_cat_continues_after_error(tmp_path: Path) -> None:
@@ -94,10 +94,10 @@ def test_cat_continues_after_error(tmp_path: Path) -> None:
     fd0.write_text("a\n")
     fd1.write_text("b\n")
     fd_missing = tmp_path / "missing.txt"
-    fds = defaultFdTriple()
+    fds = default_fd_triple()
     assert run_cat(fds, str(fd0), str(fd_missing), str(fd1)) == 1
-    assert readOut(fds) == "a\nb\n"
-    assert readErr(fds) == f"cat: {fd_missing}: No such file or directory\n"
+    assert read_out(fds) == "a\nb\n"
+    assert read_err(fds) == f"cat: {fd_missing}: No such file or directory\n"
 
 
 def test_cat_is_registered() -> None:

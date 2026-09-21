@@ -1,7 +1,7 @@
 import io
 import sys
 
-from fdtriple import fdTriple
+from fdtriple import FdTriple
 
 
 def make_fd() -> io.TextIOWrapper:
@@ -9,40 +9,40 @@ def make_fd() -> io.TextIOWrapper:
 
 
 def test_defaults_are_standard_streams() -> None:
-    fds = fdTriple()
-    assert fds.GetIn() is None
-    assert fds.GetOut() is None
-    assert fds.GetErr() is None
+    fds = FdTriple()
+    assert fds.get_in() is None
+    assert fds.get_out() is None
+    assert fds.get_err() is None
 
 
 def test_constructor_accepts_custom_stream() -> None:
     fd_err = make_fd()
-    fds = fdTriple(fd_err=fd_err)
-    assert fds.GetIn() is None
-    assert fds.GetOut() is None
-    assert fds.GetErr() is fd_err
+    fds = FdTriple(fd_err=fd_err)
+    assert fds.get_in() is None
+    assert fds.get_out() is None
+    assert fds.get_err() is fd_err
 
 
 def test_constructor_accepts_custom_streams() -> None:
     fd_in, fd_out, fd_err = make_fd(), make_fd(), make_fd()
-    fds = fdTriple(fd_in, fd_out, fd_err)
-    assert fds.GetIn() is fd_in
-    assert fds.GetOut() is fd_out
-    assert fds.GetErr() is fd_err
+    fds = FdTriple(fd_in, fd_out, fd_err)
+    assert fds.get_in() is fd_in
+    assert fds.get_out() is fd_out
+    assert fds.get_err() is fd_err
 
 
 def test_set_replaces_only_target_stream() -> None:
-    fds = fdTriple()
+    fds = FdTriple()
     fd = make_fd()
-    fds.SetOut(fd)
-    assert fds.GetOut() is fd
-    assert fds.GetIn() is None
-    assert fds.GetErr() is None
+    fds.set_out(fd)
+    assert fds.get_out() is fd
+    assert fds.get_in() is None
+    assert fds.get_err() is None
 
 
 def test_set_stream_is_usable_for_io() -> None:
-    fds = fdTriple()
-    fds.SetErr(make_fd())
-    fds.GetErr().write("oops")
-    fds.GetErr().seek(0)
-    assert fds.GetErr().read() == "oops"
+    fds = FdTriple()
+    fds.set_err(make_fd())
+    fds.get_err().write("oops")
+    fds.get_err().seek(0)
+    assert fds.get_err().read() == "oops"
