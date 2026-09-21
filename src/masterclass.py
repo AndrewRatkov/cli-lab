@@ -42,7 +42,7 @@ class MasterClass:
         self._rawCmd: str | None = None
         # execution context
         self._envScope: envScope | None = None
-        self._fdTriple: fdTriple | None = None
+        self._fdTriple: fdTriple = fdTriple()
 
     def SetNodeType(self, nodeType: NodeType) -> None:
         self._nodeType = nodeType
@@ -98,21 +98,21 @@ class MasterClass:
 
         fds = self.GetFdTriple()
         if self._splitType == SplitType.SEQ:
-            self._leftNode.SetFdTriple(
-                fdTriple(fds.GetIn(), fds.GetOut(), fds.GetErr())
+            self._leftNode.GetFdTriple().replaceNones(
+                fds.GetIn(), fds.GetOut(), fds.GetErr()
             )
-            self._rightNode.SetFdTriple(
-                fdTriple(fds.GetIn(), fds.GetOut(), fds.GetErr())
+            self._rightNode.GetFdTriple().replaceNones(
+                fds.GetIn(), fds.GetOut(), fds.GetErr()
             )
             self._leftNode.SetEnvScope(self._envScope)
             self._rightNode.SetEnvScope(self._envScope)
         elif self._splitType == SplitType.PIPE:
             self._pipeFd = io.TextIOWrapper(io.BytesIO(), encoding="utf-8")
-            self._leftNode.SetFdTriple(
-                fdTriple(fds.GetIn(), self._pipeFd, fds.GetErr())
+            self._leftNode.GetFdTriple().replaceNones(
+                fds.GetIn(), self._pipeFd, fds.GetErr()
             )
-            self._rightNode.SetFdTriple(
-                fdTriple(self._pipeFd, fds.GetOut(), fds.GetErr())
+            self._rightNode.GetFdTriple().replaceNones(
+                self._pipeFd, fds.GetOut(), fds.GetErr()
             )
 
             self._leftNode.SetEnvScope(deepcopy(self._envScope))
@@ -152,6 +152,9 @@ class MasterClass:
                 return False
 
         if self._envScope is None or self._fdTriple is None:
+            return False
+
+        if not self._fdTriple.allFdsAreSet():
             return False
 
         return True

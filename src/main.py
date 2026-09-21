@@ -8,6 +8,7 @@ def run(string: str, fds: fdTriple = fdTriple(), envs: envScope = envScope()) ->
     parser: Parser = Parser(string)
     masterclass_root: MasterClass = parser.parse()
 
+    fds.replaceNones()
     masterclass_root.SetFdTriple(fds)
     masterclass_root.SetEnvScope(envs)
 
