@@ -2,7 +2,7 @@ import io
 import sys
 
 
-class fdTriple:
+class FdTriple:
     """Triple of file descriptors: input, output and error streams."""
 
     def __init__(
@@ -15,25 +15,25 @@ class fdTriple:
         self._out: io.TextIOWrapper | None = fd_out
         self._err: io.TextIOWrapper | None = fd_err
 
-    def SetIn(self, fd: io.TextIOWrapper) -> None:
+    def set_in(self, fd: io.TextIOWrapper) -> None:
         self._in = fd
 
-    def GetIn(self) -> io.TextIOWrapper:
+    def get_in(self) -> io.TextIOWrapper:
         return self._in
 
-    def SetOut(self, fd: io.TextIOWrapper) -> None:
+    def set_out(self, fd: io.TextIOWrapper) -> None:
         self._out = fd
 
-    def GetOut(self) -> io.TextIOWrapper:
+    def get_out(self) -> io.TextIOWrapper:
         return self._out
 
-    def SetErr(self, fd: io.TextIOWrapper) -> None:
+    def set_err(self, fd: io.TextIOWrapper) -> None:
         self._err = fd
 
-    def GetErr(self) -> io.TextIOWrapper:
+    def get_err(self) -> io.TextIOWrapper:
         return self._err
 
-    def replaceNones(
+    def replace_nones(
         self,
         fd_in: io.TextIOWrapper = sys.stdin,
         fd_out: io.TextIOWrapper = sys.stdout,
@@ -46,7 +46,7 @@ class fdTriple:
         if not self._err:
             self._err = fd_err
 
-    def allFdsAreSet(self) -> bool:
+    def all_fds_are_set(self) -> bool:
         if self._in is None:
             return False
         if self._out is None:

@@ -1,7 +1,7 @@
-from envscope import envScope
-from fdtriple import fdTriple
+from envscope import EnvScope
+from fdtriple import FdTriple
 
 
-def echo(fds: fdTriple, env: envScope, args: list[str]) -> int:
-    fds.GetOut().write(" ".join(args[1:]) + "\n")
+def echo(fds: FdTriple, env: EnvScope, args: list[str]) -> int:
+    fds.get_out().write(" ".join(args[1:]) + "\n")
     return 0

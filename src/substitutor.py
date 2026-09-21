@@ -1,4 +1,4 @@
-from envscope import envScope
+from envscope import EnvScope
 
 from enum import Enum
 
@@ -6,47 +6,47 @@ from enum import Enum
 SPECIAL_CHARS: str = "'\"$ "
 
 
-class splitStatus(Enum):
+class SplitStatus(Enum):
     OK = 0
     IN_QUOTES = 1
     IN_DOUBLE_QUOTES = 2
 
 
-def isSpace(ch) -> bool:
+def is_space(ch) -> bool:
     return ch == " "
 
 
-def replaceByScope(rawCmd: str, envs: envScope) -> str:
-    """Replace all $ by values from envScope"""
+def replace_by_scope(raw_cmd: str, envs: EnvScope) -> str:
+    """Replace all $ by values from EnvScope"""
     new_str: str = ""
-    status: splitStatus = splitStatus.OK
+    status: SplitStatus = SplitStatus.OK
 
     reading_name: bool = False
     cur_read_name: str = ""
 
-    for ch in rawCmd:
+    for ch in raw_cmd:
         if ch in SPECIAL_CHARS:
             if reading_name:
                 reading_name = False
-                new_str += envs.Get(cur_read_name)
+                new_str += envs.get(cur_read_name)
                 cur_read_name = ""
 
-        if isSpace(ch):
+        if is_space(ch):
             new_str += ch
         elif ch == '"':
-            if status == splitStatus.OK:
-                status = splitStatus.IN_DOUBLE_QUOTES
-            elif status == splitStatus.IN_DOUBLE_QUOTES:
-                status = splitStatus.OK
+            if status == SplitStatus.OK:
+                status = SplitStatus.IN_DOUBLE_QUOTES
+            elif status == SplitStatus.IN_DOUBLE_QUOTES:
+                status = SplitStatus.OK
             new_str += ch
         elif ch == "'":
-            if status == splitStatus.OK:
-                status = splitStatus.IN_QUOTES
-            elif status == splitStatus.IN_QUOTES:
-                status = splitStatus.OK
+            if status == SplitStatus.OK:
+                status = SplitStatus.IN_QUOTES
+            elif status == SplitStatus.IN_QUOTES:
+                status = SplitStatus.OK
             new_str += ch
         elif ch == "$":
-            if status == splitStatus.IN_QUOTES:
+            if status == SplitStatus.IN_QUOTES:
                 new_str += ch
             else:
                 reading_name = True
@@ -58,45 +58,45 @@ def replaceByScope(rawCmd: str, envs: envScope) -> str:
 
     if reading_name:
         reading_name = False
-        new_str += envs.Get(cur_read_name)
+        new_str += envs.get(cur_read_name)
 
     return new_str
 
 
-def splitIntoArguments(rawCmd: str, envs: envScope) -> list[str]:
+def split_into_arguments(raw_cmd: str, envs: EnvScope) -> list[str]:
     """Parse command into list of arguments"""
-    s = replaceByScope(rawCmd, envs)
+    s = replace_by_scope(raw_cmd, envs)
 
     cur_str: str = ""
     args: list[str] = []
-    status: splitStatus = splitStatus.OK
+    status: SplitStatus = SplitStatus.OK
 
     for ch in s:
-        if isSpace(ch):
-            if status == splitStatus.OK:
+        if is_space(ch):
+            if status == SplitStatus.OK:
                 if len(cur_str) > 0:
                     args.append(cur_str)
                     cur_str = ""
             else:
                 cur_str += ch
         elif ch == '"':
-            if status == splitStatus.OK:
-                status = splitStatus.IN_DOUBLE_QUOTES
-            elif status == splitStatus.IN_DOUBLE_QUOTES:
-                status = splitStatus.OK
+            if status == SplitStatus.OK:
+                status = SplitStatus.IN_DOUBLE_QUOTES
+            elif status == SplitStatus.IN_DOUBLE_QUOTES:
+                status = SplitStatus.OK
             else:
                 cur_str += ch
         elif ch == "'":
-            if status == splitStatus.OK:
-                status = splitStatus.IN_QUOTES
-            elif status == splitStatus.IN_QUOTES:
-                status = splitStatus.OK
+            if status == SplitStatus.OK:
+                status = SplitStatus.IN_QUOTES
+            elif status == SplitStatus.IN_QUOTES:
+                status = SplitStatus.OK
             else:
                 cur_str += ch
         else:
             cur_str += ch
 
-    if status != splitStatus.OK:
+    if status != SplitStatus.OK:
         raise EOFError("Quotes not closed")
 
     if len(cur_str) > 0:

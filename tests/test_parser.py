@@ -5,15 +5,15 @@ from parser import Parser, ParseError
 
 
 def shape(node):
-    """Leaf -> rawCmd; inner node -> (separator, left, right)."""
-    if node.GetNodeType() == NodeType.LEAF:
-        assert node.GetLeftNode() is None and node.GetRightNode() is None
-        return node.GetRawCmd()
-    assert node.GetNodeType() == NodeType.INNER
+    """Leaf -> raw_cmd; inner node -> (separator, left, right)."""
+    if node.get_node_type() == NodeType.LEAF:
+        assert node.get_left_node() is None and node.get_right_node() is None
+        return node.get_raw_cmd()
+    assert node.get_node_type() == NodeType.INNER
     return (
-        node.GetSplitType().value,
-        shape(node.GetLeftNode()),
-        shape(node.GetRightNode()),
+        node.get_split_type().value,
+        shape(node.get_left_node()),
+        shape(node.get_right_node()),
     )
 
 
@@ -47,8 +47,8 @@ def test_structure(src, expected):
 
 def test_inner_nodes_keep_their_substring():
     root = Parser("a | b; c").parse()
-    assert root.GetRawCmd() == "a | b; c"
-    assert root.GetLeftNode().GetRawCmd() == "a | b"
+    assert root.get_raw_cmd() == "a | b; c"
+    assert root.get_left_node().get_raw_cmd() == "a | b"
 
 
 @pytest.mark.parametrize(
