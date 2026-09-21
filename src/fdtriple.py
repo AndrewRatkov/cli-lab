@@ -11,9 +11,9 @@ class fdTriple:
         fd_out: io.TextIOWrapper | None = None,
         fd_err: io.TextIOWrapper | None = None,
     ) -> None:
-        self._in: io.TextIOWrapper = fd_in if fd_in is not None else sys.stdin
-        self._out: io.TextIOWrapper = fd_out if fd_out is not None else sys.stdout
-        self._err: io.TextIOWrapper = fd_err if fd_err is not None else sys.stderr
+        self._in: io.TextIOWrapper | None = fd_in
+        self._out: io.TextIOWrapper | None = fd_out
+        self._err: io.TextIOWrapper | None = fd_err
 
     def SetIn(self, fd: io.TextIOWrapper) -> None:
         self._in = fd
@@ -32,3 +32,25 @@ class fdTriple:
 
     def GetErr(self) -> io.TextIOWrapper:
         return self._err
+
+    def replaceNones(
+        self,
+        fd_in: io.TextIOWrapper = sys.stdin,
+        fd_out: io.TextIOWrapper = sys.stdout,
+        fd_err: io.TextIOWrapper = sys.stderr,
+    ) -> None:
+        if not self._in:
+            self._in = fd_in
+        if not self._out:
+            self._out = fd_out
+        if not self._err:
+            self._err = fd_err
+
+    def allFdsAreSet(self) -> bool:
+        if self._in is None:
+            return False
+        if self._out is None:
+            return False
+        if self._err is None:
+            return False
+        return True

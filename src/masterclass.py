@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from enum import Enum
+import io
 
-from src.envscope import envScope
-from src.fdtriple import fdTriple
+from envscope import envScope
+from fdtriple import fdTriple
+import commands
+from command import Command
+from substitutor import splitIntoArguments
 
 
 class NodeType(Enum):
@@ -31,11 +36,13 @@ class MasterClass:
         self._splitType: SplitType = SplitType.NOT_INITIALIZED
         self._leftNode: MasterClass | None = None
         self._rightNode: MasterClass | None = None
+        # also for pipe node
+        self._pipeFd: io.TextIOWrapper | None = None
         # for leaf node
         self._rawCmd: str | None = None
         # execution context
         self._envScope: envScope | None = None
-        self._fdTriple: fdTriple | None = None
+        self._fdTriple: fdTriple = fdTriple()
 
     def SetNodeType(self, nodeType: NodeType) -> None:
         self._nodeType = nodeType
@@ -79,8 +86,54 @@ class MasterClass:
     def GetFdTriple(self) -> fdTriple | None:
         return self._fdTriple
 
+    def SetPipeFd(self, fd: io.TextIOWrapper) -> None:
+        self._pipeFd = fd
+
+    def GetPipeFd(self) -> io.TextIOWrapper:
+        return self._pipeFd
+
+    def preprocess(self) -> None:
+        if self._nodeType == NodeType.LEAF:
+            return
+
+        fds = self.GetFdTriple()
+        if self._splitType == SplitType.SEQ:
+            self._leftNode.GetFdTriple().replaceNones(
+                fds.GetIn(), fds.GetOut(), fds.GetErr()
+            )
+            self._rightNode.GetFdTriple().replaceNones(
+                fds.GetIn(), fds.GetOut(), fds.GetErr()
+            )
+            self._leftNode.SetEnvScope(self._envScope)
+            self._rightNode.SetEnvScope(self._envScope)
+        elif self._splitType == SplitType.PIPE:
+            self._pipeFd = io.TextIOWrapper(io.BytesIO(), encoding="utf-8")
+            self._leftNode.GetFdTriple().replaceNones(
+                fds.GetIn(), self._pipeFd, fds.GetErr()
+            )
+            self._rightNode.GetFdTriple().replaceNones(
+                self._pipeFd, fds.GetOut(), fds.GetErr()
+            )
+
+            self._leftNode.SetEnvScope(deepcopy(self._envScope))
+            self._rightNode.SetEnvScope(deepcopy(self._envScope))
+
+        self._leftNode.preprocess()
+        self._rightNode.preprocess()
+
     def process(self) -> None:
-        pass
+        assert self.isValid()
+        if self._nodeType == NodeType.INNER:
+            self._leftNode.process()
+            if self._splitType == SplitType.PIPE:
+                self._pipeFd.seek(0)
+            self._rightNode.process()
+        else:
+            args: list[str] = splitIntoArguments(self._rawCmd, self._envScope)
+            assert len(args) > 0
+            cmd: Command | None = commands.lookup(args[0])
+            if cmd:
+                cmd(self._fdTriple, self._envScope, args)
 
     def isValid(self) -> bool:
         if self._nodeType == NodeType.NOT_INITIALIZED:
@@ -92,11 +145,16 @@ class MasterClass:
                 or not self._rightNode
             ):
                 return False
-        elif self._leftNode == NodeType.LEAF:
+            if self._splitType == SplitType.PIPE and self._pipeFd is None:
+                return False
+        elif self._nodeType == NodeType.LEAF:
             if self._rawCmd is None:
                 return False
 
         if self._envScope is None or self._fdTriple is None:
+            return False
+
+        if not self._fdTriple.allFdsAreSet():
             return False
 
         return True

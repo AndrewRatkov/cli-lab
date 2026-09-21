@@ -10,16 +10,16 @@ def make_fd() -> io.TextIOWrapper:
 
 def test_defaults_are_standard_streams() -> None:
     fds = fdTriple()
-    assert fds.GetIn() is sys.stdin
-    assert fds.GetOut() is sys.stdout
-    assert fds.GetErr() is sys.stderr
+    assert fds.GetIn() is None
+    assert fds.GetOut() is None
+    assert fds.GetErr() is None
 
 
 def test_constructor_accepts_custom_stream() -> None:
     fd_err = make_fd()
     fds = fdTriple(fd_err=fd_err)
-    assert fds.GetIn() is sys.stdin
-    assert fds.GetOut() is sys.stdout
+    assert fds.GetIn() is None
+    assert fds.GetOut() is None
     assert fds.GetErr() is fd_err
 
 
@@ -36,8 +36,8 @@ def test_set_replaces_only_target_stream() -> None:
     fd = make_fd()
     fds.SetOut(fd)
     assert fds.GetOut() is fd
-    assert fds.GetIn() is sys.stdin
-    assert fds.GetErr() is sys.stderr
+    assert fds.GetIn() is None
+    assert fds.GetErr() is None
 
 
 def test_set_stream_is_usable_for_io() -> None:
