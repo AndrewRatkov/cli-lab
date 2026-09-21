@@ -30,3 +30,23 @@ Class naming: CamelCase, functions naming: snake_case.
 >> echo hello | cat
 hello
 ```
+
+## Project structure
+```
+src/
+├── main.py                 # entrypoint
+├── runtime/                # runtime context: EnvScope, FdTriple
+│   ├── __init__.py
+│   ├── envscope.py
+│   └── fdtriple.py
+├── interpreter/            # main conveyer's structure:
+│   ├── __init__.py         # Parser, MasterClass, subtitutor, etc
+│   ├── parser.py           
+│   ├── masterclass.py      
+│   └── substitutor.py      # $var-подстановка и разбиение на argv
+└── commands/               # commands implementations
+    ├── __init__.py         # COMMANDS registry, lookup
+    ├── command.py
+    ├── cat.py
+    └── echo.py
+```

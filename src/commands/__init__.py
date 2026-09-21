@@ -1,4 +1,4 @@
-from command import Command
+from commands.command import Command
 from commands.cat import cat
 from commands.echo import echo
 

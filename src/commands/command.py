@@ -1,8 +1,7 @@
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from envscope import EnvScope
-from fdtriple import FdTriple
+from runtime import EnvScope, FdTriple
 
 CommandFn = Callable[[FdTriple, EnvScope, list[str]], int]
 

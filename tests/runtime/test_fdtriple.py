@@ -1,7 +1,7 @@
 import io
 import sys
 
-from fdtriple import FdTriple
+from runtime import FdTriple
 
 
 def make_fd() -> io.TextIOWrapper:

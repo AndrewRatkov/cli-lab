@@ -1,5 +1,5 @@
-from substitutor import split_into_arguments
-from envscope import EnvScope
+from interpreter import split_into_arguments
+from runtime import EnvScope
 
 import pytest
 

@@ -1,5 +1,4 @@
-from envscope import EnvScope
-from fdtriple import FdTriple
+from runtime import EnvScope, FdTriple
 
 
 def echo(fds: FdTriple, env: EnvScope, args: list[str]) -> int:

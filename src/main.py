@@ -1,7 +1,5 @@
-from parser import Parser
-from masterclass import MasterClass
-from fdtriple import FdTriple
-from envscope import EnvScope
+from interpreter import MasterClass, Parser
+from runtime import EnvScope, FdTriple
 
 
 def run(string: str, fds: FdTriple = FdTriple(), envs: EnvScope = EnvScope()) -> None:

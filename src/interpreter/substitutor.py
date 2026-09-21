@@ -1,6 +1,6 @@
-from envscope import EnvScope
-
 from enum import Enum
+
+from runtime import EnvScope
 
 
 SPECIAL_CHARS: str = "'\"$ "
