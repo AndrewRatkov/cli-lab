@@ -4,11 +4,10 @@ from copy import deepcopy
 from enum import Enum
 import io
 
-from envscope import EnvScope
-from fdtriple import FdTriple
 import commands
-from command import Command
-from substitutor import split_into_arguments
+from commands.command import Command
+from interpreter.substitutor import split_into_arguments
+from runtime import EnvScope, FdTriple
 
 
 class NodeType(Enum):

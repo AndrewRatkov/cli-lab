@@ -1,6 +1,8 @@
-from masterclass import *
 import io
 import sys
+
+from interpreter import MasterClass, NodeType, SplitType
+from runtime import EnvScope, FdTriple
 
 
 def make_fd() -> io.TextIOWrapper:

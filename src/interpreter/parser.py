@@ -1,4 +1,4 @@
-from masterclass import MasterClass, NodeType, SplitType
+from interpreter.masterclass import MasterClass, NodeType, SplitType
 
 
 class ParseError(Exception):

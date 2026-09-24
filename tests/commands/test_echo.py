@@ -2,8 +2,7 @@ import io
 from collections.abc import Callable
 
 import commands
-from envscope import EnvScope
-from fdtriple import FdTriple
+from runtime import EnvScope, FdTriple
 
 
 def _text_fd() -> io.TextIOWrapper:

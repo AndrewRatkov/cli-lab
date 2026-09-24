@@ -1,8 +1,7 @@
 import io
 import commands
-from command import Command
-from envscope import EnvScope
-from fdtriple import FdTriple
+from commands.command import Command
+from runtime import EnvScope, FdTriple
 
 
 def _text_fd() -> io.TextIOWrapper:

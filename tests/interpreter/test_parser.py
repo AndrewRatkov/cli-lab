@@ -1,7 +1,6 @@
 import pytest
 
-from masterclass import NodeType
-from parser import Parser, ParseError
+from interpreter import NodeType, Parser, ParseError
 
 
 def shape(node):

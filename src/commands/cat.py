@@ -1,8 +1,7 @@
 import io
 import shutil
 
-from envscope import EnvScope
-from fdtriple import FdTriple
+from runtime import EnvScope, FdTriple
 
 
 def cat(fds: FdTriple, env: EnvScope, args: list[str]) -> int:

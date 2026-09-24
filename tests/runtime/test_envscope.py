@@ -1,4 +1,4 @@
-from envscope import EnvScope
+from runtime import EnvScope
 
 
 def test_set_then_get() -> None:
