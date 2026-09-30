@@ -24,8 +24,8 @@ def test_lookup_finds_registered_command() -> None:
     assert cmd.name == "echo"
 
 
-def test_lookup_unknown_returns_none() -> None:
-    assert commands.lookup("no-such-command") is None
+def test_lookup_unknown_returns_external() -> None:
+    assert commands.lookup("no-such-command") is commands.EXTERNAL
 
 
 def test_registry_names_are_unique() -> None:

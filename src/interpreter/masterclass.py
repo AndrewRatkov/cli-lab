@@ -6,6 +6,7 @@ import io
 
 import commands
 from commands.command import Command
+from interpreter.assignment import split_assignments
 from interpreter.substitutor import split_into_arguments
 from runtime import EnvScope, FdTriple
 
@@ -120,19 +121,30 @@ class MasterClass:
         self._left_node.preprocess()
         self._right_node.preprocess()
 
-    def process(self) -> None:
+    def process(self) -> int:
         assert self.is_valid()
         if self._node_type == NodeType.INNER:
             self._left_node.process()
             if self._split_type == SplitType.PIPE:
                 self._pipe_fd.seek(0)
-            self._right_node.process()
-        else:
-            args: list[str] = split_into_arguments(self._raw_cmd, self._env_scope)
-            assert len(args) > 0
-            cmd: Command | None = commands.lookup(args[0])
-            if cmd:
-                cmd(self._fd_triple, self._env_scope, args)
+            return self._right_node.process()
+
+        args: list[str] = split_into_arguments(self._raw_cmd, self._env_scope)
+        assigns, args = split_assignments(args)
+
+        if len(args) == 0:
+            for name, value in assigns:
+                self._env_scope.set(name, value)
+            return 0
+
+        env: EnvScope = self._env_scope
+        if len(assigns) > 0:
+            env = env.copy()
+            for name, value in assigns:
+                env.set(name, value)
+
+        cmd: Command = commands.lookup(args[0])
+        return cmd(self._fd_triple, env, args)
 
     def is_valid(self) -> bool:
         if self._node_type == NodeType.NOT_INITIALIZED:
