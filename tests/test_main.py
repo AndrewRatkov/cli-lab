@@ -2,10 +2,12 @@ import io
 from pathlib import Path
 
 import pytest
+import sys
 
 from commands import ShellExit
 from main import run
 from runtime import EnvScope, FdTriple
+from interpreter import MasterClass, Parser, NodeType
 
 
 def make_fd() -> io.TextIOWrapper:
@@ -103,6 +105,50 @@ def test8() -> None:
     assert res_fd.read() == "hello\nworld\n"
 
 
+def test9() -> None:
+    envs = EnvScope()
+    fds = FdTriple()
+    res_fd = make_fd()
+    fds.set_out(res_fd)
+
+    run('a="ec"; b="ho hello"', fds, envs)
+    run("$a$b", fds, envs)
+    res_fd.seek(0)
+    assert res_fd.read() == "hello\n"
+
+
+def test10() -> None:
+    envs = EnvScope()
+    fds = FdTriple()
+    res_fd = make_fd()
+    fds.set_out(res_fd)
+
+    run('a="ec"; b="ho hello > res.txt"', fds, envs)
+    run("$a$b", fds, envs)
+    res_fd.seek(0)
+    assert res_fd.read() == "hello > res.txt\n"
+
+
+def test11() -> None:
+    fds = FdTriple()
+    res_fd = make_fd()
+    fds.set_out(res_fd)
+
+    run("echo hello | wc", fds)
+    res_fd.seek(0)
+    assert res_fd.read() == "1 1 6\n"
+
+
+def test12() -> None:
+    fds = FdTriple()
+    res_fd = make_fd()
+    fds.set_out(res_fd)
+
+    run('echo " hello " | wc', fds)
+    res_fd.seek(0)
+    assert res_fd.read() == "1 1 8\n"
+
+
 def test_assignment_then_substitution() -> None:
     envs = EnvScope()
     fds = FdTriple()
@@ -120,7 +166,20 @@ def test_prefix_assignment_is_local() -> None:
     fds = FdTriple()
     fds.set_out(make_fd())
 
-    run("X=1 echo hi", fds, envs)
+    string: str = "X=1 echo hi"
+
+    parser: Parser = Parser(string)
+    masterclass_root: MasterClass = parser.parse()
+    assert masterclass_root.get_node_type() == NodeType.LEAF
+
+    fds.replace_nones(sys.stdin, sys.stdout, sys.stderr)
+    masterclass_root.set_fd_triple(fds)
+    masterclass_root.set_env_scope(envs)
+
+    assert masterclass_root.is_valid()
+    assert masterclass_root.get_raw_cmd() == string
+    masterclass_root.preprocess()
+    masterclass_root.process()
     assert envs.get("X") == ""
 
 
