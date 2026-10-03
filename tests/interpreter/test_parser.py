@@ -77,6 +77,7 @@ def test_braces(src, expected):
         (r'echo "a\"; b"', r'echo "a\"; b"'),
         # \ inside single quotes is a plain character
         (r"echo 'a\'; b", (";", r"echo 'a\'", "b")),
+        (r"X=1 echo hi", r"X=1 echo hi"),
     ],
 )
 def test_quotes_and_escapes(src, expected):
