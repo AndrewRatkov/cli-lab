@@ -81,8 +81,28 @@ def test_grep_word_regexp_with_alternation() -> None:
 
 
 
+def test_grep_after_context(notes: str) -> None:
+    fds = default_fd_triple()
+    assert run_grep(fds, "-A", "1", "часть", notes) == 0
+    assert read_out(fds) == "часть II\nстрока после II\n"
 
 
+def test_grep_after_context_separates_groups(notes: str) -> None:
+    fds = default_fd_triple()
+    assert run_grep(fds, "-A", "1", "II", notes) == 0
+    assert read_out(fds) == "часть II\nстрока после II\nx\n--\nII again\nz\n"
+
+
+def test_grep_after_context_merges_overlapping_windows(notes: str) -> None:
+    fds = default_fd_triple()
+    assert run_grep(fds, "--after-context", "3", "II", notes) == 0
+    assert read_out(fds) == "часть II\nстрока после II\nx\ny\nII again\nz\n"
+
+
+def test_grep_after_context_at_end_of_input() -> None:
+    fds = default_fd_triple("a\nb\n")
+    assert run_grep(fds, "-A", "5", "b") == 0
+    assert read_out(fds) == "b\n"
 
 
 def test_grep_stdin() -> None:
@@ -138,6 +158,8 @@ def test_grep_invalid_pattern() -> None:
     [
         ((), "the following arguments are required: PATTERN"),
         (("--bad", "x"), "unrecognized arguments: --bad"),
+        (("-A", "x", "y"), "invalid int value: 'x'"),
+        (("-A", "-1", "y"), "-1: invalid context length"),
     ],
 )
 def test_grep_usage_errors(args: tuple[str, ...], message: str) -> None:
@@ -145,7 +167,7 @@ def test_grep_usage_errors(args: tuple[str, ...], message: str) -> None:
     assert run_grep(fds, *args) == 2
     assert read_out(fds) == ""
     err = read_err(fds)
-    assert err.startswith("usage: grep [-w] PATTERN [FILE...]\n")
+    assert err.startswith("usage: grep [-w] [-A NUM] PATTERN [FILE...]\n")
     assert message in err
 
 
@@ -154,5 +176,5 @@ def test_grep_help() -> None:
     assert run_grep(fds, "-h") == 0
     out = read_out(fds)
     assert out.startswith("usage: grep")
-    assert "--word-regexp" in out
+    assert "--after-context" in out
     assert read_err(fds) == ""
