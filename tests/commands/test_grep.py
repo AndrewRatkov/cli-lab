@@ -66,6 +66,16 @@ def test_grep_line_start_anchor(notes: str) -> None:
     assert read_out(fds) == "II again\n"
 
 
+def test_grep_ignore_case(notes: str) -> None:
+    fds = default_fd_triple()
+    assert run_grep(fds, "-i", "минимальный", notes) == 0
+    assert read_out(fds) == "Минимальный синтаксис grep\n"
+
+
+def test_grep_ignore_case_long_option(notes: str) -> None:
+    fds = default_fd_triple()
+    assert run_grep(fds, "--ignore-case", "GREP", notes) == 0
+    assert read_out(fds) == "Минимальный синтаксис grep\n"
 
 
 def test_grep_word_regexp_rejects_part_of_word(notes: str) -> None:
@@ -79,6 +89,11 @@ def test_grep_word_regexp_with_alternation() -> None:
     assert run_grep(fds, "-w", "foo|qux") == 0
     assert read_out(fds) == "foo baz\nqux\n"
 
+
+def test_grep_clustered_keys(notes: str) -> None:
+    fds = default_fd_triple()
+    assert run_grep(fds, "-iw", "GREP", notes) == 0
+    assert read_out(fds) == "Минимальный синтаксис grep\n"
 
 
 def test_grep_after_context(notes: str) -> None:
@@ -167,7 +182,7 @@ def test_grep_usage_errors(args: tuple[str, ...], message: str) -> None:
     assert run_grep(fds, *args) == 2
     assert read_out(fds) == ""
     err = read_err(fds)
-    assert err.startswith("usage: grep [-w] [-A NUM] PATTERN [FILE...]\n")
+    assert err.startswith("usage: grep [-i] [-w] [-A NUM] PATTERN [FILE...]\n")
     assert message in err
 
 

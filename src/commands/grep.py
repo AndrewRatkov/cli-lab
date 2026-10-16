@@ -18,8 +18,11 @@ class _Parser(argparse.ArgumentParser):
 def _make_parser() -> _Parser:
     parser = _Parser(
         prog="grep",
-        usage="grep [-w] [-A NUM] PATTERN [FILE...]",
+        usage="grep [-i] [-w] [-A NUM] PATTERN [FILE...]",
         add_help=False,
+    )
+    parser.add_argument(
+        "-i", "--ignore-case", action="store_true", help="case-insensitive search"
     )
     parser.add_argument(
         "-w", "--word-regexp", action="store_true", help="match whole words only"
@@ -91,7 +94,7 @@ def grep(fds: FdTriple, env: EnvScope, args: list[str]) -> int:
     if opts.word_regexp:
         pattern = rf"\b(?:{pattern})\b"
     try:
-        regex = re.compile(pattern)
+        regex = re.compile(pattern, re.IGNORECASE if opts.ignore_case else 0)
     except re.error as e:
         err.write(f"grep: invalid pattern: {e}\n")
         return 2
