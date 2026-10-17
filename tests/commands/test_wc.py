@@ -34,7 +34,7 @@ def run_wc(fds: FdTriple, *args: str) -> int:
 
 def test_wc_file(tmp_path: Path) -> None:
     f = tmp_path / "a.txt"
-    f.write_text("Some example text\n")
+    f.write_text("Some example text\n", newline="")
     fds = default_fd_triple()
     assert run_wc(fds, str(f)) == 0
     assert read_out(fds) == f"1 3 18 {f}\n"
@@ -49,8 +49,8 @@ def test_wc_stdin() -> None:
 def test_wc_several_files_prints_total(tmp_path: Path) -> None:
     a = tmp_path / "a.txt"
     b = tmp_path / "b.txt"
-    a.write_text("one\n")
-    b.write_text("two three\n")
+    a.write_text("one\n", newline="")
+    b.write_text("two three\n", newline="")
     fds = default_fd_triple()
     assert run_wc(fds, str(a), str(b)) == 0
     assert read_out(fds).splitlines()[-1] == "2 3 14 total"
