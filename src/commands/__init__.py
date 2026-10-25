@@ -1,9 +1,11 @@
 from commands.command import Command
 from commands.cat import cat
+from commands.cd import cd
 from commands.echo import echo
 from commands.exit import ShellExit, exit
 from commands.external import external
 from commands.grep import grep
+from commands.ls import ls
 from commands.pwd import pwd
 from commands.wc import wc
 
@@ -14,6 +16,8 @@ COMMANDS: list[Command] = [
     Command("wc", wc),
     Command("grep", grep),
     Command("pwd", pwd),
+    Command("cd", cd),
+    Command("ls", ls),
     Command("exit", exit),
 ]
 
