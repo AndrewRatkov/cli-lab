@@ -88,7 +88,7 @@
         <mxCell id="s8" parent="1" style="whiteSpace=wrap;html=1;strokeColor=#222222;fillColor=#FFFFFF;rounded=1;absoluteArcSize=1;arcSize=12;align=center;verticalAlign=middle;fontSize=12;fontColor=#222222;" value="код возврата" vertex="1">
           <mxGeometry height="64" width="220" x="1110" y="633" as="geometry" />
         </mxCell>
-        <mxCell id="builtin" parent="1" style="whiteSpace=wrap;html=1;strokeColor=#222222;fillColor=#FFFFFF;rounded=1;absoluteArcSize=1;arcSize=12;align=center;verticalAlign=middle;fontSize=12;fontColor=#222222;" value="&lt;b&gt;встроенные&lt;/b&gt;&lt;br&gt;cat echo wc&lt;br&gt;pwd exit" vertex="1">
+        <mxCell id="builtin" parent="1" style="whiteSpace=wrap;html=1;strokeColor=#222222;fillColor=#FFFFFF;rounded=1;absoluteArcSize=1;arcSize=12;align=center;verticalAlign=middle;fontSize=12;fontColor=#222222;" value="&lt;b&gt;встроенные&lt;/b&gt;&lt;br&gt;cat echo wc&lt;br&gt;pwd exit cd ls" vertex="1">
           <mxGeometry height="70" width="110" x="590" y="416" as="geometry" />
         </mxCell>
         <mxCell id="extern" parent="1" style="whiteSpace=wrap;html=1;strokeColor=#222222;fillColor=#FFFFFF;rounded=1;absoluteArcSize=1;arcSize=12;align=center;verticalAlign=middle;fontSize=12;fontColor=#222222;" value="&lt;b&gt;внешняя&lt;/b&gt;&lt;br&gt;программа&lt;br&gt;(subprocess)" vertex="1">

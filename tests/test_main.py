@@ -200,3 +200,31 @@ def test_empty_substitution_is_noop() -> None:
 def test_exit_raises() -> None:
     with pytest.raises(ShellExit):
         run("exit", FdTriple())
+
+
+def test_cd_changes_dir_for_builtins(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "sub").mkdir()
+    (tmp_path / "sub" / "a.txt").write_text("hello\n")
+    envs = EnvScope()
+    fds = FdTriple()
+    res_fd = make_fd()
+    fds.set_out(res_fd)
+
+    run("cd sub", fds, envs)
+    run("pwd; cat a.txt", fds, envs)
+    res_fd.seek(0)
+    assert res_fd.read() == f"{tmp_path / 'sub'}\nhello\n"
+
+
+def test_cd_changes_dir_for_external_commands(tmp_path: Path, monkeypatch) -> None:
+    (tmp_path / "a" / "b" / "c").mkdir(parents=True)
+    monkeypatch.chdir(tmp_path / "a" / "b" / "c")
+    envs = EnvScope.from_os_environ()
+    res_fd = make_fd()
+    fds = FdTriple(make_fd(), res_fd)
+
+    run("cd ../../..", fds, envs)
+    run(f"'{sys.executable}' -c 'import os; print(os.getcwd())'", fds, envs)
+    res_fd.seek(0)
+    assert res_fd.read().strip() == str(tmp_path)
